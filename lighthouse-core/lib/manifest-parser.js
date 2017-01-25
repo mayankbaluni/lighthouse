@@ -17,7 +17,7 @@
 'use strict';
 
 const URL = require('./url-shim');
-const validateColor = require('./web-inspector').Color.parse;
+const validateColor = require('./web-inspector').Common.Color.parse;
 
 const ALLOWED_DISPLAY_VALUES = [
   'fullscreen',

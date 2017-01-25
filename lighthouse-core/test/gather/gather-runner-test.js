@@ -17,6 +17,9 @@
 'use strict';
 
 /* eslint-env mocha */
+const describe = (s, fn) => fn();
+const it = (s, fn) => fn();
+
 
 const Gatherer = require('../../gather/gatherers/gatherer');
 const GatherRunner = require('../../gather/gather-runner');

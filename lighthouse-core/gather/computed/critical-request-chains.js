@@ -18,7 +18,7 @@
 'use strict';
 
 const ComputedArtifact = require('./computed-artifact');
-const WebInspector = require('../../lib/web-inspector');
+require('../../lib/web-inspector');
 
 const includes = (arr, elm) => arr.indexOf(elm) > -1;
 
@@ -37,7 +37,7 @@ class CriticalRequestChains extends ComputedArtifact {
   isCritical(request) {
     // XHRs are fetched at High priority, but we exclude them, as they are unlikely to be critical
     const resourceTypeCategory = request._resourceType && request._resourceType._category;
-    if (resourceTypeCategory === WebInspector.resourceTypes.XHR._category) {
+    if (resourceTypeCategory === Common.resourceTypes.XHR._category) {
       return false;
     }
 
@@ -78,7 +78,7 @@ class CriticalRequestChains extends ComputedArtifact {
       // here, which has ancestors C, B and A (where A is the root), we will build array [C, B, A]
       // during this phase.
       const ancestors = [];
-      let ancestorRequest = request.initiatorRequest();
+      let ancestorRequest = request.initiator();
       let node = criticalRequestChains;
       while (ancestorRequest) {
         const ancestorIsCritical = this.isCritical(ancestorRequest);
@@ -95,7 +95,7 @@ class CriticalRequestChains extends ComputedArtifact {
           break;
         }
         ancestors.push(ancestorRequest.requestId);
-        ancestorRequest = ancestorRequest.initiatorRequest();
+        ancestorRequest = ancestorRequest.initiator();
       }
 
       // With the above array we can work from back to front, i.e. A, B, C, and during this process

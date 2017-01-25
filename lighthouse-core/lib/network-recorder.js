@@ -25,7 +25,7 @@ class NetworkRecorder extends EventEmitter {
     super();
 
     this._records = recordArray;
-    this.networkManager = NetworkManager.createWithFakeTarget();
+    this.networkManager = SDK.NetworkManager.createWithFakeTarget();
 
     this.startedRequestCount = 0;
     this.finishedRequestCount = 0;
@@ -45,7 +45,7 @@ class NetworkRecorder extends EventEmitter {
   }
 
   get EventTypes() {
-    return NetworkManager.Events;
+    return SDK.NetworkManager.Events;
   }
 
   activeRequestCount() {

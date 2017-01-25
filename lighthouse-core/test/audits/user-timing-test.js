@@ -20,7 +20,6 @@ const assert = require('assert');
 const traceEvents = require('../fixtures/traces/trace-user-timings.json');
 
 /* eslint-env mocha */
-
 describe('Performance: user-timings audit', () => {
   it('evaluates valid input correctly', () => {
     const auditResult = Audit.audit({
