@@ -281,6 +281,14 @@ function runLighthouse(url: string,
       return results;
     })
     .then((results: Results) => {
+      if (url !== results.url) {
+        const msg = `Redirect to ${results.url} detected. For best results, test this URL directly.`;
+        log.warn('Lighthouse CLI', msg);
+      }
+
+      return results;
+    })
+    .then((results: Results) => {
       if (flags.interactive) {
         return performanceXServer.hostExperiment({url, flags, config}, results);
       }
