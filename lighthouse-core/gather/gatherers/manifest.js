@@ -26,15 +26,11 @@ const manifestParser = require('../../lib/manifest-parser');
  * the manifest parser.
  */
 class Manifest extends Gatherer {
-
-  static _errorManifest(errorString) {
-    return {
-      raw: undefined,
-      value: undefined,
-      debugString: errorString
-    };
-  }
-
+  /**
+   * Returns the parsed manifest or null, if the page had no manifest.
+   * @param {!Object} options
+   * @return {!Promise<?Manifest>}
+   */
   afterPass(options) {
     return options.driver.sendCommand('Page.getAppManifest')
       .then(response => {
@@ -42,19 +38,16 @@ class Manifest extends Gatherer {
         // errors from Blink's manifest parser:
         //   https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#type-AppManifestError
         if (!response.data) {
-          let errorString;
-          // The driver returns an empty string for url and the data if
-          // the page has no manifest.
           if (response.url) {
-            errorString = `Unable to retrieve manifest at ${response.url}`;
+            throw new Error(`Unable to retrieve manifest at ${response.url}`);
           }
 
-          return Manifest._errorManifest(errorString);
+          // The driver will return an empty string for url and the data if
+          // the page has no manifest.
+          return null;
         }
 
         return manifestParser(response.data, response.url, options.url);
-      }, err => {
-        return Manifest._errorManifest('Unable to retrieve manifest: ' + err);
       });
   }
 }
