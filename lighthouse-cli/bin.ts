@@ -260,25 +260,31 @@ function runLighthouse(url: string,
     .then(chrome => chromeLauncher = chrome)
     .then(() => lighthouse(url, flags, config))
     .then((results: Results) => {
+      let promise = Promise.resolve(results);
+      const baseFilename = !flags.outputPath || flags.outputPath === 'stdout' ?
+          assetSaver.getFilenamePrefix(results) :
+          flags.outputPath.replace(/\.\w{2,4}$/, '');
+      const resolvedPath = path.resolve(process.cwd(), baseFilename);
+
       // delete artifacts from result so reports won't include artifacts.
       const artifacts = results.artifacts;
       results.artifacts = undefined;
 
       if (flags.saveArtifacts) {
-        assetSaver.saveArtifacts(artifacts);
+        promise = promise.then(_ => assetSaver.saveArtifacts(artifacts, resolvedPath));
       }
       if (flags.saveAssets) {
-        return assetSaver.saveAssets(artifacts, results).then(() => results);
+        promise = promise.then(_ => assetSaver.saveAssets(artifacts, {
+          title: path.basename(resolvedPath),
+          path: resolvedPath
+        }));
       }
-      return results;
-    })
-    .then((results: Results) => Printer.write(results, flags.output, flags.outputPath))
-    .then((results: Results) => {
+
       if (flags.output === Printer.OutputMode[Printer.OutputMode.pretty]) {
-        const filename = `${assetSaver.getFilenamePrefix(results)}.report.html`;
-        return Printer.write(results, 'html', filename);
+        promise = promise.then(_ => Printer.write(results, 'html', `${resolvedPath}.report.html`));
       }
-      return results;
+
+      return promise.then(_ => Printer.write(results, flags.output, flags.outputPath));
     })
     .then((results: Results) => {
       if (flags.interactive) {

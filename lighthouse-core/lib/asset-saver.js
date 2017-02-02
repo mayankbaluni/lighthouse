@@ -47,13 +47,13 @@ function getFilenamePrefix(results) {
 /**
  * Generate basic HTML page of screenshot filmstrip
  * @param {!Array<{timestamp: number, datauri: string}>} screenshots
- * @param {!Results} results
+ * @param {string} title
  * @return {!string}
  */
-function screenshotDump(screenshots, results) {
+function screenshotDump(screenshots, title) {
   return `
   <!doctype html>
-  <title>screenshots ${getFilenamePrefix(results)}</title>
+  <title>screenshots ${title}</title>
   <style>
 html {
     overflow-x: scroll;
@@ -90,24 +90,24 @@ img {
 /**
  * Save entire artifacts object to a single stringified file
  * @param {!Artifacts} artifacts
- * @param {!string} artifactsFilename
+ * @param {!string} path
  */
 // Set to ignore because testing it would imply testing fs, which isn't strictly necessary.
 /* istanbul ignore next */
-function saveArtifacts(artifacts, artifactsFilename) {
-  artifactsFilename = artifactsFilename || 'artifacts.log';
+function saveArtifacts(artifacts, path) {
   // The networkRecords artifacts have circular references
-  fs.writeFileSync(artifactsFilename, stringifySafe(artifacts));
-  log.log('artifacts file saved to disk', artifactsFilename);
+  const filename = `${path}.artifacts.log`;
+  fs.writeFileSync(filename, stringifySafe(artifacts));
+  log.log('artifacts file saved to disk', filename);
 }
 
 /**
  * Filter traces and extract screenshots to prepare for saving.
  * @param {!Artifacts} artifacts
- * @param {!Results} results
+ * @param {string} title
  * @return {!Promise<!Array<{traceData: !Object, html: string}>>}
  */
-function prepareAssets(artifacts, results) {
+function prepareAssets(artifacts, title) {
   const passNames = Object.keys(artifacts.traces);
   const assets = [];
 
@@ -117,7 +117,7 @@ function prepareAssets(artifacts, results) {
     return chain.then(_ => artifacts.requestScreenshots(trace))
       .then(screenshots => {
         const traceData = Object.assign({}, trace);
-        const html = screenshotDump(screenshots, results);
+        const html = screenshotDump(screenshots, title);
 
         assets.push({
           traceData,
@@ -131,19 +131,20 @@ function prepareAssets(artifacts, results) {
 /**
  * Writes trace(s) and associated screenshot(s) to disk.
  * @param {!Artifacts} artifacts
- * @param {!Results} results
+ * @param {{path: string, title: string}} options
  * @return {!Promise}
  */
-function saveAssets(artifacts, results) {
-  return prepareAssets(artifacts, results).then(assets => {
+function saveAssets(artifacts, options = {}) {
+  return prepareAssets(artifacts, options.title).then(assets => {
     assets.forEach((data, index) => {
-      const filenamePrefix = getFilenamePrefix(results);
       const traceData = data.traceData;
-      fs.writeFileSync(`${filenamePrefix}-${index}.trace.json`, JSON.stringify(traceData, null, 2));
-      log.log('trace file saved to disk', filenamePrefix);
+      const traceFilename = `${options.path}-${index}.trace.json`;
+      fs.writeFileSync(traceFilename, JSON.stringify(traceData, null, 2));
+      log.log('trace file saved to disk', traceFilename);
 
-      fs.writeFileSync(`${filenamePrefix}-${index}.screenshots.html`, data.html);
-      log.log('screenshots saved to disk', filenamePrefix);
+      const screenshotsFilename = `${options.path}-${index}.screenshots.html`;
+      fs.writeFileSync(screenshotsFilename, data.html);
+      log.log('screenshots saved to disk', screenshotsFilename);
     });
   });
 }
