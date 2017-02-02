@@ -29,7 +29,7 @@ limitations under the License.
 
 <!doctype html>
 
-<html data-report-context="{{reportContext}}">
+<html lang="en" data-report-context="{{reportContext}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
@@ -73,7 +73,7 @@ limitations under the License.
             <div class="report-body__url">Generated on: {{ format_time generatedTime}}</div>
           </div>
           <div class="report-body__buttons">
-            <span class="export-section">
+            <div class="export-section">
               <button class="export-button js-export" title="Export report in different formats">Export...</button>
               <ul class="export-dropdown">
                 <li><a href="#" class="report__icon print" data-action="print">Print...</a></li>
@@ -84,8 +84,8 @@ limitations under the License.
                   <li><a href="#" class="report__icon open" data-action="open-viewer" data-context="{{reportContext}}">Open in Viewer</a></li>
                 {{/if_not_eq}}
               </ul>
-            </span>
-            <button class="report__icon report-body__icon share js-share" title="Share report on GitHub"></button>
+            </div>
+            <button class="report-body__icon share js-share" title="Share report on GitHub"></button>
           </div>
           <div class="report-body__header-content">
             <section class="config-section">
@@ -120,7 +120,7 @@ limitations under the License.
       {{#each aggregations}}
       <section class="js-breakdown aggregations" id="{{nameToLink this.name}}">
         <header class="aggregations__header">
-          <h1>{{ this.name }}</h1>
+          <h2>{{ this.name }}</h2>
           <p class="aggregations__desc">{{ sanitize this.description }}</p>
           {{#if this.scored}}
           <div class="section-result">
@@ -151,9 +151,9 @@ limitations under the License.
                 <li class="subitem {{#if subItem.comingSoon}}--coming-soon{{/if}} {{#if (shouldShowHelpText subItem.score)}}--show-help{{/if}}">
 
                   <p class="subitem__desc">
-                    {{#unless ../../scored }}
+                    <!--{{#unless ../../scored }}
                       <strong class="subitem__category">{{ subItem.category }}:</strong>
-                    {{/unless}}
+                    {{/unless}}-->
 
                     {{ sanitize subItem.description }}
 

@@ -27,9 +27,9 @@ class Viewport extends Audit {
     return {
       category: 'Mobile Friendly',
       name: 'viewport',
-      description: 'HTML has a `<meta name="viewport">` tag containing `width` or `initial-scale`',
+      description: 'Has a `<meta name="viewport">` tag with `width` or `initial-scale`',
       helpText: 'Add a viewport meta tag to optimize your app for mobile screens. ' +
-          '[Learn more](https://developers.google.com/web/tools/lighthouse/audits/has-viewport-meta-tag").',
+          '[Learn more](https://developers.google.com/web/tools/lighthouse/audits/has-viewport-meta-tag).',
       requiredArtifacts: ['Viewport']
     };
   }
